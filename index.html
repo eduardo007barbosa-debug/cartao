@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Controle de Cartões — Novo Lançamento</title>
+  <style>
+    :root{
+      --bg:#0b1020; --bg-page:#0f1222; --card:#ffffff; --muted:#6b7280;
+      --primary:#2563eb; --primary-press:#1d4ed8; --ok:#e6ffed; --err:#ffecec;
+      --border:#e5e7eb; --radius:14px; --shadow:0 10px 25px rgba(2,6,23,.15);
+    }
+    *,*::before,*::after{ box-sizing:border-box }
+    html,body{ margin:0; padding:0 }
+    body{
+      font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg-page); -webkit-font-smoothing: antialiased; line-height:1.5;
+    }
+    .appbar{
+      position: sticky; top:0; z-index:10;
+      background: linear-gradient(180deg, var(--bg) 0%, #101738 100%);
+      color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .brand{ display:flex; gap:10px; align-items:center; font-weight:700 }
+    .logo{ width:36px;height:36px;border-radius:10px;background:#1d4ed8;display:grid;place-content:center;box-shadow:inset 0 0 20px rgba(255,255,255,.25) }
+    .brand small{ display:block; font-weight:500; color:#cbd5e1 }
+    main{ padding:18px }
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:16px; max-width: 860px; margin: 16px auto;
+    }
+    h1{ font-size:clamp(20px,4vw,24px); margin:4px 0 2px }
+    p.muted{ color:var(--muted); margin:4px 0 16px }
+
+    form{ display:grid; gap:14px }
+    .grid{ display:grid; gap:12px; grid-template-columns:1fr }
+    @media (min-width:640px){ .grid{ grid-template-columns:repeat(2,1fr) } }
+
+    label{ font-weight:650; display:block; margin:0 0 6px }
+    input,select{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border);
+      outline:none; background:#fff; transition: box-shadow .15s, border-color .15s;
+    }
+    input:focus,select:focus{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,.15) }
+    .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+
+    button{
+      border:0; border-radius:12px; padding:14px 16px; font-weight:700; cursor:pointer;
+      background:var(--primary); color:#fff; transition: transform .04s, background .15s;
+    }
+    button:active{ transform:translateY(1px); background:var(--primary-press) }
+    button[disabled]{ opacity:.6; pointer-events:none }
+
+    .ok,.erro{ padding:10px 12px; border-radius:10px; font-weight:600 }
+    .ok{ background:var(--ok) } .erro{ background:var(--err) }
+    .muted-inline{ color:var(--muted); font-size:14px }
+
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    th,td{ padding:10px 12px; border-bottom:1px solid var(--border) }
+    th{ text-align:left; font-size:14px; color:#334155 }
+    tbody tr:hover{ background:#f8fafc }
+    .section-title{ margin: 20px 0 8px; font-weight:800; color:#111827 }
+    .right{ text-align:right }
+    .chip{ display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; font-size:12px; color:#4338ca }
+    .loading{ opacity:.75; pointer-events:none }
+  </style>
+</head>
+<body>
+
+  <header class="appbar">
+    <div class="brand">
+      <div class="logo">💳</div>
+      <div>Lan&ccedil;amentos<small>Controle de Cart&otilde;es</small></div>
+    </div>
+    <span class="muted-inline" id="todayLabel"></span>
+  </header>
+
+  <main>
+    <!-- FORM -->
+    <section class="card">
+      <h1>Novo lan&ccedil;amento</h1>
+      <p class="muted">Preencha os campos. Os combos s&atilde;o carregados do banco (cart&atilde;o, segmento e fatura).</p>
+
+      <form id="form-lancamento" autocomplete="off">
+        <div class="grid">
+          <div>
+            <label for="data_compra">Data da compra</label>
+            <input id="data_compra" name="data_compra" type="date" required />
+          </div>
+          <div>
+            <label for="cartao_id">Cart&atilde;o</label>
+            <select id="cartao_id" name="cartao_id" required>
+              <option value="" disabled selected>Carregando...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="descricao">Descri&ccedil;&atilde;o</label>
+            <input id="descricao" name="descricao" placeholder="Ex.: Supermercado, Uber, Farm&aacute;cia..." required />
+          </div>
+          <div>
+            <label for="valor">Valor (R$)</label>
+            <input id="valor" name="valor" type="number" step="0.01" min="0" placeholder="0,00" required />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="segmento_id">Segmento</label>
+            <select id="segmento_id" name="segmento_id" required>
+              <option value="" disabled selected>Carregando...</option>
+            </select>
+          </div>
+          <div>
+            <label for="fatura_id">Fatura</label>
+            <select id="fatura_id" name="fatura_id" required>
+              <option value="" disabled selected>Carregando...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="row">
+            <input id="dividido" name="dividido" type="checkbox" />
+            Compra dividida (50/50)?
+          </label>
+          <div style="min-width:140px">
+            <label for="parcelas">Parcelas</label>
+            <input id="parcelas" name="parcelas" type="number" min="1" value="1" />
+          </div>
+        </div>
+
+        <button id="btnSalvar" type="submit">Salvar lan&ccedil;amento</button>
+        <p id="status"></p>
+      </form>
+    </section>
+
+    <!-- CONSOLIDADO -->
+    <section class="card">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <h2 style="margin:0">Consolidado</h2>
+        <span class="chip" id="lastRefresh">atualizando...</span>
+      </div>
+      <p class="muted">Totais por <b>Fatura</b>, <b>Cart&atilde;o</b> e <b>Segmento</b>. “Meu” considera 50% quando <i>dividido</i>.</p>
+      <div id="tblContainer"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+    // === SUAS CHAVES (anon) ===
+    const SUPABASE_URL = 'https://drsqkinxjyxzuuphjevb.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyc3FraW54anl4enV1cGhqZXZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMzM4MjgsImV4cCI6MjA3MzgwOTgyOH0.cetPuslpZKjAsx8Ex7VOftXXGhIKPu471TPeobzdjnE'
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    // ---- Helpers/refs
+    const BRL = new Intl.NumberFormat('pt-BR',{ style:'currency', currency:'BRL' })
+    const $ = (id) => document.getElementById(id)
+    const form = $('form-lancamento'), status = $('status'), btn = $('btnSalvar')
+    const selectCartao = $('cartao_id'), selectSegmento = $('segmento_id'), selectFatura = $('fatura_id')
+    const inputDividido = $('dividido'), inputParcelas = $('parcelas'), inputData = $('data_compra'), inputValor = $('valor')
+    const todayLabel = $('todayLabel'), tblContainer = $('tblContainer'), lastRefresh = $('lastRefresh')
+
+    // ---- Data hoje
+    const toLocalISO = (d=new Date()) => new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)
+    const formatPt = (iso) => { if(!iso) return ''; const [y,m,day]=iso.split('-'); return `${day}/${m}/${y}` }
+    const todayIso = toLocalISO(); inputData.value = todayIso; inputData.max = todayIso; todayLabel.textContent = formatPt(todayIso)
+
+    // ---- UI parcelas
+    const toggleParcelas = () => { const on=inputDividido.checked; inputParcelas.disabled = !on; if(!on) inputParcelas.value = 1 }
+    inputDividido.addEventListener('change', toggleParcelas); toggleParcelas()
+
+    // ---- DOM helpers
+    const opt=(el,val,txt)=>{ const o=document.createElement('option'); o.value=val; o.textContent=txt; el.appendChild(o) }
+
+    // ---- Carregar combos
+    async function carregaCombos(){
+      status.textContent='Carregando op\u00e7\u00f5es...'; status.className='muted'; document.body.classList.add('loading')
+      const [{data:cartoes,error:e1},{data:segmentos,error:e2},{data:faturas,error:e3}] = await Promise.all([
+        supabase.from('cartao').select('id,nome_cartao').order('nome_cartao',{ascending:true}),
+        supabase.from('segmento').select('id,segmento').order('segmento',{ascending:true}),
+        supabase.from('fatura').select('id,nome_amigavel,data_fatura,data_vencimento').order('data_vencimento',{ascending:true})
+      ])
+      if(e1||e2||e3){ console.error({e1,e2,e3}); status.textContent='Erro ao carregar combos. Verifique RLS/GRANT.'; status.className='erro'; document.body.classList.remove('loading'); return }
+
+      selectCartao.innerHTML='<option value="" disabled selected>Selecione...</option>'; cartoes.forEach(c=>opt(selectCartao,c.id,c.nome_cartao))
+      selectSegmento.innerHTML='<option value="" disabled selected>Selecione...</option>'; segmentos.forEach(s=>opt(selectSegmento,s.id,s.segmento))
+      selectFatura.innerHTML='<option value="" disabled selected>Selecione...</option>';
+      faturas.forEach(f=>{
+        const label = (f.nome_amigavel && f.nome_amigavel.trim())
+          ? f.nome_amigavel
+          : `Fatura ${formatPt(f.data_fatura)} • vence ${formatPt(f.data_vencimento)}`
+        opt(selectFatura,f.id,label)
+      })
+
+      status.textContent=''; status.className=''; document.body.classList.remove('loading')
+    }
+
+    // ---- Consolidado (usa RPC consolidado())
+    function tableBlock(titulo, rows) {
+      const wrap = document.createElement('div')
+      const h = document.createElement('div'); h.className='section-title'; h.textContent=titulo; wrap.appendChild(h)
+      const table = document.createElement('table')
+      table.innerHTML = `
+        <thead>
+          <tr><th>${titulo.slice(0,-1)}</th><th class="right">Total</th><th class="right">Meu</th><th class="right">A cobrar</th></tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot><tr><th>Subtotais</th><th class="right"></th><th class="right"></th><th class="right"></th></tr></tfoot>
+      `
+      const tbody = table.querySelector('tbody')
+      let sFull=0, sMeu=0, sCobrar=0
+      rows.forEach(r=>{
+        sFull  += Number(r.total_full||0)
+        sMeu   += Number(r.total_meu||0)
+        sCobrar+= Number(r.cobrar_terceiros||0)
+        const tr = document.createElement('tr')
+        tr.innerHTML = `
+          <td>${r.rotulo}</td>
+          <td class="right">${BRL.format(r.total_full||0)}</td>
+          <td class="right">${BRL.format(r.total_meu||0)}</td>
+          <td class="right">${BRL.format(r.cobrar_terceiros||0)}</td>
+        `
+        tbody.appendChild(tr)
+      })
+      const tfootCells = table.querySelectorAll('tfoot .right')
+      tfootCells[0].textContent = BRL.format(sFull)
+      tfootCells[1].textContent = BRL.format(sMeu)
+      tfootCells[2].textContent = BRL.format(sCobrar)
+      wrap.appendChild(table)
+      return wrap
+    }
+
+    function renderConsolidado(rows){
+      const fat = rows.filter(r=>r.categoria==='Faturas')
+      const car = rows.filter(r=>r.categoria==='Cartões')
+      const seg = rows.filter(r=>r.categoria==='Segmentos')
+      const frag = document.createDocumentFragment()
+      if (fat.length) frag.appendChild(tableBlock('Faturas', fat))
+      if (car.length) frag.appendChild(tableBlock('Cartões', car))
+      if (seg.length) frag.appendChild(tableBlock('Segmentos', seg))
+      tblContainer.innerHTML=''
+      tblContainer.appendChild(frag)
+    }
+
+    async function carregarConsolidado(){
+      lastRefresh.textContent = 'carregando...'
+      const { data, error } = await supabase.rpc('consolidado')
+      if (error) {
+        console.error(error)
+        tblContainer.innerHTML = '<p class="erro">Não foi possível carregar o consolidado. Verifique a função <b>consolidado()</b> e permissões.</p>'
+        lastRefresh.textContent = 'erro'
+        return
+      }
+      renderConsolidado(data || [])
+      lastRefresh.textContent = 'atualizado ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+    }
+
+    // ---- Submit do form
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault()
+      status.textContent=''; status.className=''
+
+      const data_compra = inputData.value
+      const descricao = document.getElementById('descricao').value.trim()
+      const cartaoId = parseInt(selectCartao.value,10)
+      const segmentoId = parseInt(selectSegmento.value,10)
+      const faturaId = parseInt(selectFatura.value,10)
+      const dividido = inputDividido.checked
+      const parcelas = parseInt(inputParcelas.value||'1',10)
+      const valor = parseFloat((inputValor.value||'0').toString().replace(',','.'))
+
+      if(!data_compra || !descricao || !cartaoId || !segmentoId || !faturaId || isNaN(valor)){
+        status.textContent = 'Preencha todos os campos.'; status.className='erro'; return
+      }
+      if(!dividido && parcelas !== 1){
+        status.textContent='Se não for dividido, as parcelas devem ser 1.'; status.className='erro'; return
+      }
+
+      btn.disabled=true; document.body.classList.add('loading')
+      status.textContent='Salvando...'; status.className='muted'
+
+      const payload = { data_compra, descricao, cartao:cartaoId, segmento:segmentoId, fatura:faturaId, dividido, parcelas, valor }
+      const { error } = await supabase.from('lancamento').insert([payload])
+
+      btn.disabled=false; document.body.classList.remove('loading')
+      if(error){
+        console.error(error)
+        status.textContent='Não foi possível salvar. Confira RLS/INSERT e colunas.'; status.className='erro'
+      } else {
+        status.textContent='Lançamento salvo com sucesso!'; status.className='ok'
+        form.reset(); inputData.value = todayIso; toggleParcelas()
+        carregarConsolidado()
+      }
+    })
+
+    // ---- Inicialização
+    await carregaCombos()
+    await carregarConsolidado()
+  </script>
+</body>
+</html>

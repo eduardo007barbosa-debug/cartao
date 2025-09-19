@@ -4,33 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
-  <title>Controle de Cartões — Novo Lançamento</title>
+  <title>Controle de Cartões — Lançamentos</title>
   <style>
     :root{
       --bg:#0b1020; --bg-page:#0f1222; --card:#ffffff; --muted:#6b7280;
       --primary:#2563eb; --primary-press:#1d4ed8; --ok:#e6ffed; --err:#ffecec;
       --border:#e5e7eb; --radius:14px; --shadow:0 10px 25px rgba(2,6,23,.15);
+      --bar-bg:#e5e7eb; --bar-ok:#22c55e; --bar-warn:#f59e0b; --bar-bad:#ef4444;
     }
     *,*::before,*::after{ box-sizing:border-box }
     html,body{ margin:0; padding:0 }
-    body{
-      font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg-page); -webkit-font-smoothing: antialiased; line-height:1.5;
-    }
-    .appbar{
-      position: sticky; top:0; z-index:10;
-      background: linear-gradient(180deg, var(--bg) 0%, #101738 100%);
-      color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
+    body{ font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg-page); -webkit-font-smoothing:antialiased; line-height:1.5; }
+    .appbar{ position:sticky; top:0; z-index:10; background:linear-gradient(180deg,var(--bg) 0%,#101738 100%); color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,.08) }
     .brand{ display:flex; gap:10px; align-items:center; font-weight:700 }
     .logo{ width:36px;height:36px;border-radius:10px;background:#1d4ed8;display:grid;place-content:center;box-shadow:inset 0 0 20px rgba(255,255,255,.25) }
     .brand small{ display:block; font-weight:500; color:#cbd5e1 }
     main{ padding:18px }
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-      box-shadow:var(--shadow); padding:16px; max-width: 860px; margin: 16px auto;
-    }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; max-width: 920px; margin: 16px auto; }
     h1{ font-size:clamp(20px,4vw,24px); margin:4px 0 2px }
     p.muted{ color:var(--muted); margin:4px 0 16px }
 
@@ -39,32 +29,40 @@
     @media (min-width:640px){ .grid{ grid-template-columns:repeat(2,1fr) } }
 
     label{ font-weight:650; display:block; margin:0 0 6px }
-    input,select{
-      width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border);
-      outline:none; background:#fff; transition: box-shadow .15s, border-color .15s;
-    }
+    input,select{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); outline:none; background:#fff; transition: box-shadow .15s, border-color .15s }
     input:focus,select:focus{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,.15) }
-    .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
 
-    button{
-      border:0; border-radius:12px; padding:14px 16px; font-weight:700; cursor:pointer;
-      background:var(--primary); color:#fff; transition: transform .04s, background .15s;
-    }
-    button:active{ transform:translateY(1px); background:var(--primary-press) }
-    button[disabled]{ opacity:.6; pointer-events:none }
+    .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    .btn{ border:0; border-radius:12px; padding:12px 16px; font-weight:700; cursor:pointer; background:var(--primary); color:#fff; transition: transform .04s, background .15s }
+    .btn:active{ transform:translateY(1px); background:var(--primary-press) }
+    .btn[disabled]{ opacity:.6; pointer-events:none }
+    .btn-outline{ background:transparent; color:var(--primary); border:1px solid var(--primary) }
 
     .ok,.erro{ padding:10px 12px; border-radius:10px; font-weight:600 }
     .ok{ background:var(--ok) } .erro{ background:var(--err) }
     .muted-inline{ color:var(--muted); font-size:14px }
+    .loading{ opacity:.75; pointer-events:none }
 
-    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    .section-title{ margin: 8px 0 8px; font-weight:800; color:#111827 }
+    .right{ text-align:right }
+
+    .table-wrap{ width:100%; overflow-x:auto }
+    table{ width:100%; min-width:520px; border-collapse:separate; border-spacing:0 }
     th,td{ padding:10px 12px; border-bottom:1px solid var(--border) }
     th{ text-align:left; font-size:14px; color:#334155 }
     tbody tr:hover{ background:#f8fafc }
-    .section-title{ margin: 20px 0 8px; font-weight:800; color:#111827 }
-    .right{ text-align:right }
-    .chip{ display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; font-size:12px; color:#4338ca }
-    .loading{ opacity:.75; pointer-events:none }
+
+    .sum-grid{ display:grid; gap:10px; grid-template-columns:1fr }
+    @media (min-width:520px){ .sum-grid{ grid-template-columns:repeat(3,1fr) } }
+    .sum-card{ background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:12px }
+    .progress{ height:12px; width:100%; background:var(--bar-bg); border-radius:999px; overflow:hidden }
+    .bar{ height:100%; width:0%; background:var(--bar-ok); transition: width .3s ease }
+    .bar.warn{ background:var(--bar-warn) }
+    .bar.bad{ background:var(--bar-bad) }
+
+    .modal{ position:fixed; inset:0; background:rgba(15,23,42,.6); display:none; align-items:center; justify-content:center; padding:20px }
+    .modal .box{ width:100%; max-width:520px; background:#fff; border-radius:14px; border:1px solid var(--border); box-shadow:var(--shadow); padding:16px }
+    .modal .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px }
   </style>
 </head>
 <body>
@@ -81,7 +79,7 @@
     <!-- FORM -->
     <section class="card">
       <h1>Novo lan&ccedil;amento</h1>
-      <p class="muted">Preencha os campos. Os combos s&atilde;o carregados do banco (cart&atilde;o, segmento e fatura).</p>
+      <p class="muted">“Quem paga” é independente de “Parcelas”. Sempre enviamos o <b>valor total</b> e o número de parcelas (&ge; 1). <br/>Os <b>resumos</b> consideram apenas a <b>1ª parcela</b> de cada lançamento.</p>
 
       <form id="form-lancamento" autocomplete="off">
         <div class="grid">
@@ -117,38 +115,94 @@
           </div>
           <div>
             <label for="fatura_id">Fatura</label>
-            <select id="fatura_id" name="fatura_id" required>
-              <option value="" disabled selected>Carregando...</option>
-            </select>
+            <div class="row" style="gap:8px">
+              <select id="fatura_id" name="fatura_id" required style="flex:1">
+                <option value="" disabled selected>Carregando...</option>
+              </select>
+              <button type="button" id="btnEditarFatura" class="btn btn-outline">Editar</button>
+              <button type="button" id="btnNovaFatura" class="btn btn-outline">Nova</button>
+            </div>
           </div>
         </div>
 
-        <div class="row">
-          <label class="row">
-            <input id="dividido" name="dividido" type="checkbox" />
-            Compra dividida (50/50)?
-          </label>
-          <div style="min-width:140px">
+        <div class="grid">
+          <div>
+            <label>Quem paga?</label>
+            <div class="row">
+              <label class="row"><input type="radio" name="terc" value="0"  checked /> Só eu (0%)</label>
+              <label class="row"><input type="radio" name="terc" value="50" /> 50/50</label>
+              <label class="row"><input type="radio" name="terc" value="100" /> 100% outra pessoa</label>
+            </div>
+          </div>
+          <div>
             <label for="parcelas">Parcelas</label>
             <input id="parcelas" name="parcelas" type="number" min="1" value="1" />
+            <small class="muted-inline">Se não parcelado, deixe 1. Somatórios consideram a <b>1ª parcela</b>.</small>
           </div>
         </div>
 
-        <button id="btnSalvar" type="submit">Salvar lan&ccedil;amento</button>
+        <button id="btnSalvar" type="submit" class="btn">Salvar lan&ccedil;amento</button>
         <p id="status"></p>
       </form>
     </section>
 
-    <!-- CONSOLIDADO -->
+    <!-- RESUMO DA FATURA (selecionável) -->
     <section class="card">
       <div class="row" style="justify-content:space-between; align-items:center">
-        <h2 style="margin:0">Consolidado</h2>
-        <span class="chip" id="lastRefresh">atualizando...</span>
+        <h2 style="margin:0">Resumo da Fatura</h2>
+        <div class="row">
+          <select id="resumoFaturaSelect"></select>
+          <span class="muted-inline" id="lastRefresh">atualizando...</span>
+        </div>
       </div>
-      <p class="muted">Totais por <b>Fatura</b>, <b>Cart&atilde;o</b> e <b>Segmento</b>. “Meu” considera 50% quando <i>dividido</i>.</p>
+
+      <div class="sum-grid" id="resumoFaturaGrid"></div>
+
+      <div class="table-wrap" id="tblFaturaWrap"></div>
+    </section>
+
+    <!-- CONSOLIDADO GERAL -->
+    <section class="card">
+      <h2 class="section-title">Consolidado geral</h2>
+      <p class="muted">Totais por <b>Cart&atilde;o</b> e <b>Segmento</b>, considerando apenas a <b>1ª parcela</b> de cada lançamento (e o percentual de terceiros).</p>
       <div id="tblContainer"></div>
     </section>
   </main>
+
+  <!-- MODAL: Nova/Editar fatura -->
+  <div class="modal" id="modalFatura" aria-hidden="true">
+    <div class="box">
+      <h3 id="modalTitle" style="margin:0 0 8px">Nova fatura</h3>
+      <form id="formNovaFatura">
+        <input type="hidden" id="nf_id" />
+        <div class="grid">
+          <div>
+            <label for="nf_data_fatura">Data da fatura</label>
+            <input id="nf_data_fatura" type="date" required />
+          </div>
+          <div>
+            <label for="nf_data_venc">Data de vencimento</label>
+            <input id="nf_data_venc" type="date" required />
+          </div>
+        </div>
+        <div class="grid">
+          <div>
+            <label for="nf_nome">Nome amigável (opcional)</label>
+            <input id="nf_nome" placeholder="Ex.: Outubro/25" />
+          </div>
+          <div>
+            <label for="nf_limite">Limite (R$)</label>
+            <input id="nf_limite" type="number" step="0.01" min="0" placeholder="0,00" />
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" id="btnCancelarFatura" class="btn btn-outline">Cancelar</button>
+          <button type="submit" class="btn">Salvar</button>
+        </div>
+        <p id="statusFatura"></p>
+      </form>
+    </div>
+  </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
@@ -158,110 +212,195 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyc3FraW54anl4enV1cGhqZXZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMzM4MjgsImV4cCI6MjA3MzgwOTgyOH0.cetPuslpZKjAsx8Ex7VOftXXGhIKPu471TPeobzdjnE'
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    // ---- Helpers/refs
     const BRL = new Intl.NumberFormat('pt-BR',{ style:'currency', currency:'BRL' })
     const $ = (id) => document.getElementById(id)
+
+    // refs
     const form = $('form-lancamento'), status = $('status'), btn = $('btnSalvar')
     const selectCartao = $('cartao_id'), selectSegmento = $('segmento_id'), selectFatura = $('fatura_id')
-    const inputDividido = $('dividido'), inputParcelas = $('parcelas'), inputData = $('data_compra'), inputValor = $('valor')
-    const todayLabel = $('todayLabel'), tblContainer = $('tblContainer'), lastRefresh = $('lastRefresh')
+    const inputData = $('data_compra'), inputValor = $('valor'), inputDesc = $('descricao'), inputParcelas = $('parcelas')
+    const todayLabel = $('todayLabel'), lastRefresh = $('lastRefresh')
+    const resumoFaturaSelect = $('resumoFaturaSelect'), resumoFaturaGrid = $('resumoFaturaGrid'), tblFaturaWrap = $('tblFaturaWrap')
+    const tblContainer = $('tblContainer')
 
-    // ---- Data hoje
+    // modal
+    const modalFatura = $('modalFatura'), modalTitle = $('modalTitle'), formNovaFatura = $('formNovaFatura'), statusFatura = $('statusFatura')
+    const nfId = $('nf_id'), nfData = $('nf_data_fatura'), nfVenc = $('nf_data_venc'), nfNome = $('nf_nome'), nfLimite = $('nf_limite')
+    const btnNovaFatura = $('btnNovaFatura'), btnEditarFatura = $('btnEditarFatura'), btnCancelarFatura = $('btnCancelarFatura')
+
+    // data hoje
     const toLocalISO = (d=new Date()) => new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)
     const formatPt = (iso) => { if(!iso) return ''; const [y,m,day]=iso.split('-'); return `${day}/${m}/${y}` }
     const todayIso = toLocalISO(); inputData.value = todayIso; inputData.max = todayIso; todayLabel.textContent = formatPt(todayIso)
+    nfData.value = todayIso
 
-    // ---- UI parcelas
-    const toggleParcelas = () => { const on=inputDividido.checked; inputParcelas.disabled = !on; if(!on) inputParcelas.value = 1 }
-    inputDividido.addEventListener('change', toggleParcelas); toggleParcelas()
+    const opt=(el,val,txt)=>{ const o=document.createElement('option'); o.value=String(val); o.textContent=txt; el.appendChild(o) }
 
-    // ---- DOM helpers
-    const opt=(el,val,txt)=>{ const o=document.createElement('option'); o.value=val; o.textContent=txt; el.appendChild(o) }
+    let cacheFaturas = []
+    let cacheCons = [] // consolidado
 
-    // ---- Carregar combos
-    async function carregaCombos(){
-      status.textContent='Carregando op\u00e7\u00f5es...'; status.className='muted'; document.body.classList.add('loading')
-      const [{data:cartoes,error:e1},{data:segmentos,error:e2},{data:faturas,error:e3}] = await Promise.all([
+    async function carregarDadosBase({ preferFaturaId=null } = {}) {
+      status.textContent='Carregando...'; status.className='muted'; document.body.classList.add('loading')
+
+      const [{data:cartoes,error:e1},{data:segmentos,error:e2},{data:faturas,error:e3},{data:cons,error:e4}] = await Promise.all([
         supabase.from('cartao').select('id,nome_cartao').order('nome_cartao',{ascending:true}),
         supabase.from('segmento').select('id,segmento').order('segmento',{ascending:true}),
-        supabase.from('fatura').select('id,nome_amigavel,data_fatura,data_vencimento').order('data_vencimento',{ascending:true})
+        supabase.from('fatura').select('id,nome_amigavel,data_fatura,data_vencimento,limite').order('data_vencimento',{ascending:true}),
+        supabase.rpc('consolidado')
       ])
-      if(e1||e2||e3){ console.error({e1,e2,e3}); status.textContent='Erro ao carregar combos. Verifique RLS/GRANT.'; status.className='erro'; document.body.classList.remove('loading'); return }
 
-      selectCartao.innerHTML='<option value="" disabled selected>Selecione...</option>'; cartoes.forEach(c=>opt(selectCartao,c.id,c.nome_cartao))
-      selectSegmento.innerHTML='<option value="" disabled selected>Selecione...</option>'; segmentos.forEach(s=>opt(selectSegmento,s.id,s.segmento))
-      selectFatura.innerHTML='<option value="" disabled selected>Selecione...</option>';
-      faturas.forEach(f=>{
-        const label = (f.nome_amigavel && f.nome_amigavel.trim())
-          ? f.nome_amigavel
-          : `Fatura ${formatPt(f.data_fatura)} • vence ${formatPt(f.data_vencimento)}`
-        opt(selectFatura,f.id,label)
-      })
+      if(e1||e2||e3||e4){
+        console.error({e1,e2,e3,e4})
+        status.textContent='Erro ao carregar dados. Verifique RLS/GRANT e a função consolidado().'
+        status.className='erro'; document.body.classList.remove('loading'); return
+      }
+
+      cacheFaturas = faturas || []
+      cacheCons = cons || []
+
+      // cartões (default XP)
+      selectCartao.innerHTML='<option value="" disabled selected>Selecione...</option>'
+      cartoes.forEach(c=>opt(selectCartao,c.id,c.nome_cartao))
+      const xp = Array.from(selectCartao.options).find(o => o.textContent.trim().toLowerCase() === 'xp')
+      if (xp) selectCartao.value = xp.value
+
+      // segmentos
+      selectSegmento.innerHTML='<option value="" disabled selected>Selecione...</option>'
+      segmentos.forEach(s=>opt(selectSegmento,s.id,s.segmento))
+
+      // faturas (form + seletor de resumo)
+      const makeFatLabel = (f)=> (f.nome_amigavel && f.nome_amigavel.trim())
+        ? f.nome_amigavel
+        : `Fatura ${formatPt(f.data_fatura)} • vence ${formatPt(f.data_vencimento)}`
+      selectFatura.innerHTML=''
+      resumoFaturaSelect.innerHTML=''
+      faturas.forEach(f=>{ opt(selectFatura,f.id,makeFatLabel(f)); opt(resumoFaturaSelect,f.id,makeFatLabel(f)) })
+
+      // default: última fatura
+      let defaultFatId = preferFaturaId
+      if (!defaultFatId && faturas.length){
+        const last = faturas.reduce((a,b)=>{
+          const da = new Date(a.data_vencimento || a.data_fatura)
+          const db = new Date(b.data_vencimento || b.data_fatura)
+          return (db>da)? b : a
+        })
+        defaultFatId = last.id
+      }
+      if (defaultFatId){
+        selectFatura.value = String(defaultFatId)
+        resumoFaturaSelect.value = String(defaultFatId)
+      }
+
+      renderResumoFatura()
+      renderConsolidadoGeral()
 
       status.textContent=''; status.className=''; document.body.classList.remove('loading')
     }
 
-    // ---- Consolidado (usa RPC consolidado())
+    function getConsFaturas(){ return cacheCons.filter(r=>r.categoria==='Faturas') }
+    function getConsCartoes(){ return cacheCons.filter(r=>r.categoria==='Cartões') }
+    function getConsSegmentos(){ return cacheCons.filter(r=>r.categoria==='Segmentos') }
+
+    // ----- Resumo Fatura -----
+    function renderResumoFatura(){
+      const id = Number(resumoFaturaSelect.value)
+      const fat = cacheFaturas.find(f=>f.id===id)
+      const consRow = getConsFaturas().find(r=>Number(r.chave)===id)
+
+      const meu = consRow ? Number(consRow.total_meu||0) : 0
+      const total = consRow ? Number(consRow.total_full||0) : 0
+      const limite = fat?.limite ?? null
+      const cobrar = consRow ? Number(consRow.cobrar_terceiros||0) : 0
+
+      resumoFaturaGrid.innerHTML = `
+        <div class="sum-card">
+          <div class="muted">Total desta fatura (1ª parcela)</div>
+          <div style="font-weight:800">${BRL.format(total)}</div>
+        </div>
+        <div class="sum-card">
+          <div class="muted">Meu total (1ª parcela, deduzindo terceiros)</div>
+          <div style="font-weight:800">${BRL.format(meu)}</div>
+        </div>
+        <div class="sum-card">
+          <div class="muted">A cobrar de terceiros (1ª parcela)</div>
+          <div style="font-weight:800">${BRL.format(cobrar)}</div>
+        </div>
+      `
+
+      // Barra de progresso (meu vs limite)
+      tblFaturaWrap.innerHTML = ''
+      const wrap = document.createElement('div')
+      wrap.className = 'sum-card'
+      const pct = (limite && limite>0) ? Math.round((meu/limite)*100) : null
+      const colorClass = pct==null ? '' : (pct<=80 ? '' : (pct<=100 ? 'warn' : 'bad'))
+      wrap.innerHTML = `
+        <div class="row" style="justify-content:space-between">
+          <div><b>Limite</b> ${limite!=null ? BRL.format(limite) : '<span class="muted-inline">não definido</span>'}</div>
+          <div>${pct!=null ? pct+'%' : ''}</div>
+        </div>
+        <div class="progress" style="margin-top:8px">
+          <div class="bar ${colorClass}" style="width:${Math.min(100, Math.max(0, pct||0))}%"></div>
+        </div>
+      `
+      tblFaturaWrap.appendChild(wrap)
+
+      // Tabela (1 fatura)
+      const tableWrap = document.createElement('div')
+      tableWrap.className = 'table-wrap'
+      const table = document.createElement('table')
+      table.innerHTML = `
+        <thead><tr><th>Fatura</th><th class="right">Total (1ª parc.)</th><th class="right">Meu (1ª parc.)</th><th class="right">A cobrar (1ª parc.)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>${consRow ? consRow.rotulo : '—'}</td>
+            <td class="right">${BRL.format(total)}</td>
+            <td class="right">${BRL.format(meu)}</td>
+            <td class="right">${BRL.format(cobrar)}</td>
+          </tr>
+        </tbody>
+      `
+      tableWrap.appendChild(table)
+      tblFaturaWrap.appendChild(tableWrap)
+    }
+
+    // ----- Consolidado geral (Cartões / Segmentos) -----
     function tableBlock(titulo, rows) {
       const wrap = document.createElement('div')
+      wrap.className = 'table-wrap'
       const h = document.createElement('div'); h.className='section-title'; h.textContent=titulo; wrap.appendChild(h)
       const table = document.createElement('table')
       table.innerHTML = `
         <thead>
-          <tr><th>${titulo.slice(0,-1)}</th><th class="right">Total</th><th class="right">Meu</th><th class="right">A cobrar</th></tr>
+          <tr><th>${titulo.slice(0,-1)}</th><th class="right">Total (1ª parc.)</th><th class="right">Meu (1ª parc.)</th><th class="right">A cobrar (1ª parc.)</th></tr>
         </thead>
         <tbody></tbody>
-        <tfoot><tr><th>Subtotais</th><th class="right"></th><th class="right"></th><th class="right"></th></tr></tfoot>
       `
       const tbody = table.querySelector('tbody')
-      let sFull=0, sMeu=0, sCobrar=0
       rows.forEach(r=>{
-        sFull  += Number(r.total_full||0)
-        sMeu   += Number(r.total_meu||0)
-        sCobrar+= Number(r.cobrar_terceiros||0)
         const tr = document.createElement('tr')
         tr.innerHTML = `
           <td>${r.rotulo}</td>
-          <td class="right">${BRL.format(r.total_full||0)}</td>
-          <td class="right">${BRL.format(r.total_meu||0)}</td>
-          <td class="right">${BRL.format(r.cobrar_terceiros||0)}</td>
+          <td class="right">${BRL.format(Number(r.total_full||0))}</td>
+          <td class="right">${BRL.format(Number(r.total_meu||0))}</td>
+          <td class="right">${BRL.format(Number(r.cobrar_terceiros||0))}</td>
         `
         tbody.appendChild(tr)
       })
-      const tfootCells = table.querySelectorAll('tfoot .right')
-      tfootCells[0].textContent = BRL.format(sFull)
-      tfootCells[1].textContent = BRL.format(sMeu)
-      tfootCells[2].textContent = BRL.format(sCobrar)
       wrap.appendChild(table)
       return wrap
     }
 
-    function renderConsolidado(rows){
-      const fat = rows.filter(r=>r.categoria==='Faturas')
-      const car = rows.filter(r=>r.categoria==='Cartões')
-      const seg = rows.filter(r=>r.categoria==='Segmentos')
+    function renderConsolidadoGeral(){
+      const car = cacheCons.filter(r=>r.categoria==='Cartões')
+      const seg = cacheCons.filter(r=>r.categoria==='Segmentos')
       const frag = document.createDocumentFragment()
-      if (fat.length) frag.appendChild(tableBlock('Faturas', fat))
       if (car.length) frag.appendChild(tableBlock('Cartões', car))
       if (seg.length) frag.appendChild(tableBlock('Segmentos', seg))
-      tblContainer.innerHTML=''
-      tblContainer.appendChild(frag)
-    }
-
-    async function carregarConsolidado(){
-      lastRefresh.textContent = 'carregando...'
-      const { data, error } = await supabase.rpc('consolidado')
-      if (error) {
-        console.error(error)
-        tblContainer.innerHTML = '<p class="erro">Não foi possível carregar o consolidado. Verifique a função <b>consolidado()</b> e permissões.</p>'
-        lastRefresh.textContent = 'erro'
-        return
-      }
-      renderConsolidado(data || [])
+      tblContainer.innerHTML=''; tblContainer.appendChild(frag)
       lastRefresh.textContent = 'atualizado ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
     }
 
-    // ---- Submit do form
+    // ----- Submit
     form.addEventListener('submit', async (e)=>{
       e.preventDefault()
       status.textContent=''; status.className=''
@@ -271,21 +410,18 @@
       const cartaoId = parseInt(selectCartao.value,10)
       const segmentoId = parseInt(selectSegmento.value,10)
       const faturaId = parseInt(selectFatura.value,10)
-      const dividido = inputDividido.checked
-      const parcelas = parseInt(inputParcelas.value||'1',10)
-      const valor = parseFloat((inputValor.value||'0').toString().replace(',','.'))
+      const parcelas = Math.max(1, parseInt((document.getElementById('parcelas').value)||'1',10))
+      const valor = parseFloat((document.getElementById('valor').value||'0').toString().replace(',','.'))
+      const terceiros_percent = Number((document.querySelector('input[name="terc"]:checked')||{value:'0'}).value)
 
       if(!data_compra || !descricao || !cartaoId || !segmentoId || !faturaId || isNaN(valor)){
         status.textContent = 'Preencha todos os campos.'; status.className='erro'; return
-      }
-      if(!dividido && parcelas !== 1){
-        status.textContent='Se não for dividido, as parcelas devem ser 1.'; status.className='erro'; return
       }
 
       btn.disabled=true; document.body.classList.add('loading')
       status.textContent='Salvando...'; status.className='muted'
 
-      const payload = { data_compra, descricao, cartao:cartaoId, segmento:segmentoId, fatura:faturaId, dividido, parcelas, valor }
+      const payload = { data_compra, descricao, cartao:cartaoId, segmento:segmentoId, fatura:faturaId, parcelas, valor, terceiros_percent }
       const { error } = await supabase.from('lancamento').insert([payload])
 
       btn.disabled=false; document.body.classList.remove('loading')
@@ -294,14 +430,70 @@
         status.textContent='Não foi possível salvar. Confira RLS/INSERT e colunas.'; status.className='erro'
       } else {
         status.textContent='Lançamento salvo com sucesso!'; status.className='ok'
-        form.reset(); inputData.value = todayIso; toggleParcelas()
-        carregarConsolidado()
+        form.reset(); document.getElementById('data_compra').value = toLocalISO(); document.getElementById('parcelas').value = 1
+        await refreshConsolidadoAposMudanca()
       }
     })
 
-    // ---- Inicialização
-    await carregaCombos()
-    await carregarConsolidado()
+    async function refreshConsolidadoAposMudanca(){
+      const { data:cons, error } = await supabase.rpc('consolidado')
+      if(!error){ cacheCons = cons || []; renderResumoFatura(); renderConsolidadoGeral() }
+    }
+
+    // ----- Modal Nova/Editar Fatura
+    const openModal = (modo='novo') => {
+      modalTitle.textContent = modo==='editar' ? 'Editar fatura' : 'Nova fatura'
+      statusFatura.textContent=''; nfNome.value=''
+      if (modo==='novo'){
+        nfId.value=''; nfData.value = toLocalISO(); nfVenc.value = toLocalISO(); nfLimite.value=''
+      } else {
+        const id = Number(selectFatura.value || resumoFaturaSelect.value)
+        const f = cacheFaturas.find(x=>x.id===id)
+        if (f){ nfId.value=f.id; nfData.value=f.data_fatura; nfVenc.value=f.data_vencimento; nfNome.value=f.nome_amigavel||''; nfLimite.value = f.limite ?? '' }
+      }
+      modalFatura.style.display='flex'; modalFatura.setAttribute('aria-hidden','false')
+    }
+    const closeModal = () => { modalFatura.style.display='none'; modalFatura.setAttribute('aria-hidden','true') }
+
+    document.getElementById('btnNovaFatura').addEventListener('click', ()=>openModal('novo'))
+    document.getElementById('btnEditarFatura').addEventListener('click', ()=>openModal('editar'))
+    document.getElementById('btnCancelarFatura').addEventListener('click', closeModal)
+    modalFatura.addEventListener('click', (e)=>{ if(e.target===modalFatura) closeModal() })
+
+    formNovaFatura.addEventListener('submit', async (e)=>{
+      e.preventDefault()
+      statusFatura.textContent='Salvando...'; statusFatura.className='muted'
+      const row = {
+        data_fatura: nfData.value,
+        data_vencimento: nfVenc.value,
+        nome_amigavel: nfNome.value.trim() || null,
+        limite: nfLimite.value ? parseFloat(nfLimite.value) : null
+      }
+
+      let resp
+      if (nfId.value){
+        resp = await supabase.from('fatura').update(row).eq('id', Number(nfId.value)).select().single()
+      } else {
+        resp = await supabase.from('fatura').insert([row]).select().single()
+      }
+
+      if (resp.error){
+        console.error(resp.error)
+        statusFatura.textContent='Erro ao salvar fatura. Verifique RLS/GRANT de INSERT/UPDATE.'; statusFatura.className='erro'; return
+      }
+      statusFatura.textContent='OK!'; statusFatura.className='ok'
+      closeModal()
+      const newId = resp.data.id
+      await carregarDadosBase({ preferFaturaId:newId })
+      resumoFaturaSelect.value = String(newId)
+      renderResumoFatura()
+    })
+
+    // ----- Eventos
+    resumoFaturaSelect.addEventListener('change', renderResumoFatura)
+
+    // ----- Inicialização
+    await carregarDadosBase()
   </script>
 </body>
 </html>
